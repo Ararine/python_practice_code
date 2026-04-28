@@ -1,11 +1,14 @@
+import logging
+
 from repositories import db_test
 from fastapi.responses import JSONResponse
 from fastapi import status
 from core.exceptions import AppException
 
+logger = logging.getLogger(__name__)
+
 def insert_test(req, db):
     try:
-        raise Exception
         db_test.ins_query(req, db)
         
         db.commit()
@@ -18,12 +21,12 @@ def insert_test(req, db):
         )
     except Exception as e :
         db.rollback()
-        print(f"exception : {e}")
+        logger.info("db.rollback()")
+        logger.error(f"exception : {e}")
         raise
         
 def select_test(req, db):
     try:
-        raise AppException("일단 오류 발생", status.HTTP_400_BAD_REQUEST)
         rows = db_test.sel_query(req, db)
         
         return JSONResponse(
@@ -34,18 +37,12 @@ def select_test(req, db):
             }
         )
     except AppException:
-        print("### checkpoint1 ###")
         raise AppException("hello error", status.HTTP_400_BAD_REQUEST)
     except Exception as e :
-        print("### checkpoint2 ###")
         db.rollback()
-        print(f"exception : {e}")
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={
-                "message" : "select fail"
-            }
-        )
+        logger.info("db.rollback()")
+        logger.error(f"exception : {e}")
+        raise AppException("select fail", status.HTTP_400_BAD_REQUEST)
         
 def put_test(req, db):
     try:
@@ -61,13 +58,9 @@ def put_test(req, db):
         )
     except Exception as e :
         db.rollback()
-        print(f"exception : {e}")
-        return JSONResponse(
-            status_code=status.HTTP_404_NOT_FOUND,
-            content={
-                "message" : "put fail"
-            }
-        )
+        logger.info("db.rollback()")
+        logger.error(f"exception : {e}")
+        raise AppException("put fail", status.HTTP_400_BAD_REQUEST)
         
 # def patch_test(req, db):
 #     try:
