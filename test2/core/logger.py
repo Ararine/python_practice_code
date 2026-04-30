@@ -3,6 +3,7 @@ import logging
 def setup_logging():
     root = logging.getLogger()
     
+    # nodemon 실행시 로그가 추가로 나오는 것 방지하기 위한 조건문
     if root.handlers:
         root.handlers.clear()
     
